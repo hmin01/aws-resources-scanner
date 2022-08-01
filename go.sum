@@ -20,6 +20,10 @@ github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.9 h1:QTPDno4J5TyfpPi3dqCZpD+
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.9/go.mod h1:Req/32OLRbXpPX5TxHkwf2Ln9qclJCV6n1S7v0v+FWo=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.50.1 h1:cPtNo4iGUcQT854iZwUpu/rWdmv4Cp4NyyfLVONoz24=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.50.1/go.mod h1:VoBcwURHnJVCWuXHdqVuG03i2lUlHJ5DTTqDSyCdEcc=
+github.com/aws/aws-sdk-go-v2/service/ecr v1.17.8 h1:wgZo/yeY0f+2RWy2q1rTtZSPMmq37Zy3pY4QypHeurg=
+github.com/aws/aws-sdk-go-v2/service/ecr v1.17.8/go.mod h1:ItZADKTnGxqcqXABHyNpoBljQ8ORt4h+D39RToM/3Ds=
+github.com/aws/aws-sdk-go-v2/service/ecs v1.18.11 h1:MWJBTtfIwBJJn7AMYiyvc2g62HUAxJ+RujN2rMYPzVI=
+github.com/aws/aws-sdk-go-v2/service/ecs v1.18.11/go.mod h1:3+9Tsuq6J9nezo2AO9UYzUVgZ72W21Ryh0d+DJRCzys=
 github.com/aws/aws-sdk-go-v2/service/efs v1.17.6 h1:xLqD17d7IITbgpcwAowvpadKnlhdL2XlyCbh/CQemy4=
 github.com/aws/aws-sdk-go-v2/service/efs v1.17.6/go.mod h1:rbtsxZFwOmj0xOlKwlgQb22SDSbNbLxy/gMcbSup4r8=
 github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.8 h1:D6Sc+XyjK++NhkJJLvZNcf0xyzNhhC+GVn/MYDeONS4=
@@ -38,6 +42,10 @@ github.com/aws/aws-sdk-go-v2/service/rds v1.23.1 h1:zvpUUbGBIbFHFRLSB+vJTHPdjt5p
 github.com/aws/aws-sdk-go-v2/service/rds v1.23.1/go.mod h1:1XfH++WvMsGemZw5r06cZmeBRVGIYSYQLxnYXVd9e+g=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.1 h1:OKQIQ0QhEBmGr2LfT952meIZz3ujrPYnxH+dO/5ldnI=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.1/go.mod h1:NffjpNsMUFXp6Ok/PahrktAncoekWrywvmIK83Q2raE=
+github.com/aws/aws-sdk-go-v2/service/ses v1.14.9 h1:ORB9PcCYLTX62rSzclE93yr4C4SAgtxK9YWsmcXMNAU=
+github.com/aws/aws-sdk-go-v2/service/ses v1.14.9/go.mod h1:0FCgrN6yDWrcl8DQZyCnXWw6/NBTTuNDn43TybzuWko=
+github.com/aws/aws-sdk-go-v2/service/sns v1.17.9 h1:fc11hvtWgpXUhMlnfvB/D/dB0kkYdva1REpUZipVHIc=
+github.com/aws/aws-sdk-go-v2/service/sns v1.17.9/go.mod h1:maJ5I+CMzzSxfREF1r8mefJL8iafTiqph/NNd62iFfE=
 github.com/aws/aws-sdk-go-v2/service/sqs v1.19.0 h1:DIfxowLm7VUMqipBd/3y7EGiQTHeAiHelFHEhkRIS+E=
 github.com/aws/aws-sdk-go-v2/service/sqs v1.19.0/go.mod h1:p2Kn1XCPZLA5Z+dE859RGRCuP3TUC3pTgU7j1bcj5bY=
 github.com/aws/aws-sdk-go-v2/service/sso v1.11.12 h1:760bUnTX/+d693FT6T6Oa7PZHfEQT9XMFZeM5IQIB0A=

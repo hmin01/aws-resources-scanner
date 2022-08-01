@@ -8,7 +8,7 @@ import (
 	"main.com/util"
 )
 
-const TOTAL_OPS uint64 = 7
+const TOTAL_OPS uint64 = 11
 
 func main() {
 	// 작업 결과 채널 생성
@@ -78,9 +78,13 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	go scanner.GetDynamodbs(config, resources)
 	go scanner.GetEBSs(config, resources)
 	go scanner.GetEC2s(config, resources)
+	go scanner.GetECRs(config, resources)
+	go scanner.GetECSs(config, resources)
 	go scanner.GetEFSs(config, resources)
 	go scanner.GetELBs(config, resources)
 	go scanner.GetRDSs(config, resources)
+	go scanner.GetSESs(config, resources)
+	go scanner.GetSNSs(config, resources)
 	go scanner.GetSQSs(config, resources)
 
 	for resource := range resources {

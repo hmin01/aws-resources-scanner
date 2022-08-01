@@ -28,6 +28,16 @@ func GetEC2s(config aws.Config, resources chan<- Resource) {
 	resources <- getResources("ec2", getEC2Instances(config))
 }
 
+// ECR 조회
+func GetECRs(config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ecr", getECRRepositories(config))
+}
+
+// ECS 조회
+func GetECSs(config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ecs", getECSClusters(config))
+}
+
 // EFS 조회
 func GetEFSs(config aws.Config, resources chan<- Resource) {
 	resources <- getResources("efs", getEFSStorages(config))
@@ -46,6 +56,16 @@ func GetRDSs(config aws.Config, resources chan<- Resource) {
 // S3 조회
 func GetS3s(config aws.Config, resources chan<- Resource) {
 	resources <- getResources("s3", getS3Buckets(config))
+}
+
+// SES 조회
+func GetSESs(config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ses", getSESIdentities(config))
+}
+
+// SNS 조회
+func GetSNSs(config aws.Config, resources chan<- Resource) {
+	resources <- getResources("sns", getSNSTopics(config))
 }
 
 // SQS 조회
