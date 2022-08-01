@@ -2,8 +2,10 @@ package util
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -28,6 +30,17 @@ func Print(result map[string]ResourceByRegion) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// 문자열을 정수로 변환
+func StringToInteger(text string) int {
+	transformed, err := strconv.Atoi(text)
+	if err != nil {
+		log.Printf("[ERROR] %v", err)
+		return 0
+	}
+	// 반환
+	return transformed
 }
 
 // 결과 파일 생성

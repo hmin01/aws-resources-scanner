@@ -8,7 +8,7 @@ import (
 	"main.com/util"
 )
 
-const TOTAL_OPS uint64 = 2
+const TOTAL_OPS uint64 = 11
 
 func main() {
 	// 작업 결과 채널 생성
@@ -21,6 +21,7 @@ func main() {
 	config := scanner.Configuration("ap-northeast-2")
 	// 사용 가능한 리전 조회
 	regions := scanner.GetRegions(config)
+	// regions := []string{"ap-northeast-2"}
 	// 사용 가능 리전이 없을 경우, 종료
 	if len(regions) == 0 {
 		log.Fatal("[NOTICE] 사용 가능 리전이 없습니다.")
@@ -70,16 +71,29 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	integration := make(map[string]any)
 	// 작업 카운트
 	var ops uint64 = 0
-	// 리소스 존재 여부
-	// var isExist bool = false
+	// 해당 리전 사용 여부 (리소스 존재 여부)
+	var usage bool = false
 
 	// 각 리소스 조회
-	go scanner.GetEC2s(config, resources)
+	go scanner.GetDynamodbs(config, resources)
 	go scanner.GetEBSs(config, resources)
+	go scanner.GetEC2s(config, resources)
+	go scanner.GetECRs(config, resources)
+	go scanner.GetECSs(config, resources)
+	go scanner.GetEFSs(config, resources)
+	go scanner.GetELBs(config, resources)
+	go scanner.GetRDSs(config, resources)
+	go scanner.GetSESs(config, resources)
+	go scanner.GetSNSs(config, resources)
+	go scanner.GetSQSs(config, resources)
 
 	for resource := range resources {
 		// 리소스 통합
 		integration[resource.Type] = resource.Data
+		// 리소스 존재 여부
+		if !usage && resource.Count > 0 {
+			usage = true
+		}
 		// 작업 완료 카운트
 		ops += 1
 		// 모든 작업 완료 여부 확인
@@ -90,7 +104,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 			result <- util.ResourceByRegion{
 				Region:    region,
 				Resources: integration,
-				Usage:     func(count uint64) bool { return count != 0 }(resource.Count),
+				Usage:     usage,
 			}
 			// Log
 			log.Printf("[NOTICE] %s 에 대한 리소스 조회 완료", region)
