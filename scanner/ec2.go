@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,27 +25,40 @@ type Volume struct {
 }
 
 // EC2 인스턴스 목록 조회
-func getEC2Instances(cfg aws.Config) []Instance {
+func getEC2Instances(ctx context.Context, conf aws.Config) []Instance {
 	// EC2 클라이언트 생성
-	client := ec2.NewFromConfig(cfg)
+	client := ec2.NewFromConfig(conf)
+
+	// 목록 생성
+	var list []Instance
+	// Paginator 생성
+	paginator := ec2.NewDescribeInstancesPaginator(client, &ec2.DescribeInstancesInput{MaxResults: aws.Int32(100)})
+
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
 
 	// 데이터 조회
-	resp, err := client.DescribeInstances(context.TODO(), nil)
-	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
-	}
-	// 데이터 추출
-	var list []Instance
-	for _, elem := range resp.Reservations {
-		for _, instance := range elem.Instances {
-			// 인스턴스 정보 생성
-			info := Instance{
-				Id:    *instance.InstanceId,
-				Type:  string(instance.InstanceType),
-				State: string(instance.State.Name),
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			panic(err)
+		}
+		// 데이터 추출
+		for _, elem := range resp.Reservations {
+			for _, instance := range elem.Instances {
+				// 인스턴스 정보 생성
+				info := Instance{
+					Id:    *instance.InstanceId,
+					Type:  string(instance.InstanceType),
+					State: string(instance.State.Name),
+				}
+				// 목록에 추가
+				list = append(list, info)
 			}
-			// 목록에 추가
-			list = append(list, info)
 		}
 	}
 	// 결과 반환
@@ -53,27 +66,40 @@ func getEC2Instances(cfg aws.Config) []Instance {
 }
 
 // EBS 볼륨 목록 조회
-func getEBSVolumes(cfg aws.Config) []Volume {
+func getEBSVolumes(ctx context.Context, conf aws.Config) []Volume {
 	// EC2 클라이언트 생성
-	client := ec2.NewFromConfig(cfg)
+	client := ec2.NewFromConfig(conf)
+
+	// 목록 생성
+	var list []Volume
+	// Paginator 생성
+	paginator := ec2.NewDescribeVolumesPaginator(client, &ec2.DescribeVolumesInput{MaxResults: aws.Int32(100)})
+
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
 
 	// 데이터 조회
-	resp, err := client.DescribeVolumes(context.TODO(), nil)
-	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
-	}
-	// 데이터 추출
-	var list []Volume
-	for _, volume := range resp.Volumes {
-		info := Volume{
-			// 볼륨 정보 생성
-			Id:    *volume.VolumeId,
-			Type:  string(volume.VolumeType),
-			Size:  *volume.Size,
-			State: string(volume.State),
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			panic(err)
 		}
-		// 목록에 추가
-		list = append(list, info)
+		// 데이터 추출
+		for _, volume := range resp.Volumes {
+			info := Volume{
+				// 볼륨 정보 생성
+				Id:    *volume.VolumeId,
+				Type:  string(volume.VolumeType),
+				Size:  *volume.Size,
+				State: string(volume.State),
+			}
+			// 목록에 추가
+			list = append(list, info)
+		}
 	}
 	// 결과 반환
 	return list

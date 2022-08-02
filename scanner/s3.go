@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -13,14 +13,21 @@ type Bucket struct {
 	Name string
 }
 
-func getS3Buckets(cfg aws.Config) []Bucket {
+func getS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
 	// 클라이언트 생성
 	client := s3.NewFromConfig(cfg)
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
-	resp, err := client.ListBuckets(context.TODO(), nil)
+	resp, err := client.ListBuckets(ctx, nil)
 	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
+		panic(err)
 	}
 	// 데이터 추출
 	var list []Bucket

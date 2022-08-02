@@ -2,11 +2,14 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ResourceByRegion struct {
@@ -17,6 +20,8 @@ type ResourceByRegion struct {
 
 // 결과 출력
 func Print(result map[string]ResourceByRegion) {
+	// 작업 처리 시간 (Start)
+	start := time.Now()
 	// 파일 생성
 	file := createOut()
 	defer file.Close()
@@ -30,6 +35,8 @@ func Print(result map[string]ResourceByRegion) {
 	if err != nil {
 		panic(err)
 	}
+	// 작업 처리 시간 출력
+	fmt.Printf("[NOTICE] Print process duration: %v\n", time.Since(start))
 }
 
 // 문자열을 정수로 변환
@@ -69,8 +76,16 @@ func extractWorkingDirPath() string {
 	if err != nil {
 		panic(err)
 	}
-	// 조회된 경로에서 binary 파일 제외
-	slice := strings.Split(path, "/")
-	// 제외 처리 후, 문자열 병합 및 반환
-	return strings.Join(slice[:(len(slice)-1)], "/")
+	// 운영체제에 따른 처리
+	if runtime.GOOS == "windows" {
+		// 조회된 경로에서 binary 파일 제외
+		slice := strings.Split(path, "\\")
+		// 제외 처리 후, 문자열 병합 및 반환
+		return strings.Join(slice[:(len(slice)-1)], "\\")
+	} else {
+		// 조회된 경로에서 binary 파일 제외
+		slice := strings.Split(path, "/")
+		// 제외 처리 후, 문자열 병합 및 반환
+		return strings.Join(slice[:(len(slice)-1)], "/")
+	}
 }

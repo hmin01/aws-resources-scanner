@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"context"
 	"reflect"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -13,64 +14,74 @@ type Resource struct {
 	Type  string `json:"type"`
 }
 
+// API Gateway 조회
+func GetApiGateways(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("apigateway", getApiGateways(ctx, config))
+}
+
+// Cognito 조회
+func GetCognitos(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("apigateway", getCognitoUserPools(ctx, config))
+}
+
 // Dynamodb 조회
-func GetDynamodbs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("dynamodb", getDynamodbTables(config))
+func GetDynamodbs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("dynamodb", getDynamodbTables(ctx, config))
 }
 
 // EBS 조회
-func GetEBSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("ebs", getEBSVolumes(config))
+func GetEBSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ebs", getEBSVolumes(ctx, config))
 }
 
 // EC2 조회
-func GetEC2s(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("ec2", getEC2Instances(config))
+func GetEC2s(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ec2", getEC2Instances(ctx, config))
 }
 
 // ECR 조회
-func GetECRs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("ecr", getECRRepositories(config))
+func GetECRs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ecr", getECRRepositories(ctx, config))
 }
 
 // ECS 조회
-func GetECSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("ecs", getECSClusters(config))
+func GetECSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ecs", getECSClusters(ctx, config))
 }
 
 // EFS 조회
-func GetEFSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("efs", getEFSStorages(config))
+func GetEFSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("efs", getEFSStorages(ctx, config))
 }
 
 // ELB 조회
-func GetELBs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("elb", getLoadBalancers(config))
+func GetELBs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("elb", getLoadBalancers(ctx, config))
 }
 
 // RDS 조회
-func GetRDSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("rds", getRDSInstances(config))
+func GetRDSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("rds", getRDSInstances(ctx, config))
 }
 
 // S3 조회
-func GetS3s(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("s3", getS3Buckets(config))
+func GetS3s(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("s3", getS3Buckets(ctx, config))
 }
 
 // SES 조회
-func GetSESs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("ses", getSESIdentities(config))
+func GetSESs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("ses", getSESIdentities(ctx, config))
 }
 
 // SNS 조회
-func GetSNSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("sns", getSNSTopics(config))
+func GetSNSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("sns", getSNSTopics(ctx, config))
 }
 
 // SQS 조회
-func GetSQSs(config aws.Config, resources chan<- Resource) {
-	resources <- getResources("sqs", getSQSQueues(config))
+func GetSQSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("sqs", getSQSQueues(ctx, config))
 }
 
 // 응답 데이터
