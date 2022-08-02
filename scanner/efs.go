@@ -15,26 +15,32 @@ type FileSystem struct {
 	Size int64
 }
 
-func getEFSStorages(cfg aws.Config) []FileSystem {
+func getEFSStorages(ctx context.Context, conf aws.Config) []FileSystem {
 	// 클라이언트 생성
-	client := efs.NewFromConfig(cfg)
+	client := efs.NewFromConfig(conf)
+
+	// 목록 생성
+	var list []FileSystem
+	// Paginator 생성
+	paginator := efs.NewDescribeFileSystemsPaginator(client, &efs.DescribeFileSystemsInput{MaxItems: aws.Int32(100)})
 
 	// 데이터 조회
-	resp, err := client.DescribeFileSystems(context.TODO(), nil)
-	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
-	}
-	// 데이터 추출
-	var list []FileSystem
-	for _, fileSystem := range resp.FileSystems {
-		// 파일 시스템 정보 생성
-		info := FileSystem{
-			Id:   *fileSystem.FileSystemId,
-			Name: *fileSystem.Name,
-			Size: fileSystem.SizeInBytes.Value,
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			log.Fatalf("[ERROR] %s", err)
 		}
-		// 목록에 추가
-		list = append(list, info)
+		// 데이터 추출
+		for _, fileSystem := range resp.FileSystems {
+			// 파일 시스템 정보 생성
+			info := FileSystem{
+				Id:   *fileSystem.FileSystemId,
+				Name: *fileSystem.Name,
+				Size: fileSystem.SizeInBytes.Value,
+			}
+			// 목록에 추가
+			list = append(list, info)
+		}
 	}
 	// 결과 반환
 	return list

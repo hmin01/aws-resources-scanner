@@ -2,11 +2,13 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type ResourceByRegion struct {
@@ -17,6 +19,8 @@ type ResourceByRegion struct {
 
 // 결과 출력
 func Print(result map[string]ResourceByRegion) {
+	// 작업 처리 시간 (Start)
+	start := time.Now()
 	// 파일 생성
 	file := createOut()
 	defer file.Close()
@@ -30,6 +34,8 @@ func Print(result map[string]ResourceByRegion) {
 	if err != nil {
 		panic(err)
 	}
+	// 작업 처리 시간 출력
+	fmt.Printf("[NOTICE] Print process duration: %v\n", time.Since(start))
 }
 
 // 문자열을 정수로 변환

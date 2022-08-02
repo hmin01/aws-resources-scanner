@@ -15,12 +15,12 @@ type Table struct {
 	State string
 }
 
-func getDynamodbTables(cfg aws.Config) []Table {
+func getDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
 	// 클라이언트 생성
 	client := dynamodb.NewFromConfig(cfg)
 
 	// 데이터 조회
-	resp, err := client.ListTables(context.TODO(), nil)
+	resp, err := client.ListTables(ctx, nil)
 	if err != nil {
 		log.Fatalf("[ERROR] %s", err)
 	}

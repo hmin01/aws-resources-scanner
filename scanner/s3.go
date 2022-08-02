@@ -13,12 +13,12 @@ type Bucket struct {
 	Name string
 }
 
-func getS3Buckets(cfg aws.Config) []Bucket {
+func getS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
 	// 클라이언트 생성
 	client := s3.NewFromConfig(cfg)
 
 	// 데이터 조회
-	resp, err := client.ListBuckets(context.TODO(), nil)
+	resp, err := client.ListBuckets(ctx, nil)
 	if err != nil {
 		log.Fatalf("[ERROR] %s", err)
 	}

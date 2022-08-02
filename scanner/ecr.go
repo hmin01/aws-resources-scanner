@@ -16,28 +16,32 @@ type ECR struct {
 }
 
 // ECR 저장소 목록 조회
-func getECRRepositories(cfg aws.Config) []ECR {
-	// Context 생성
-	ctx := context.TODO()
+func getECRRepositories(ctx context.Context, conf aws.Config) []ECR {
 	// 클라이언트 생성
-	client := ecr.NewFromConfig(cfg)
+	client := ecr.NewFromConfig(conf)
+
+	// 목록 생성
+	var list []ECR
+	// Paginator 생성
+	paginator := ecr.NewDescribeRepositoriesPaginator(client, &ecr.DescribeRepositoriesInput{MaxResults: aws.Int32(100)})
 
 	// 데이터 조회
-	resp, err := client.DescribeRepositories(ctx, nil)
-	if err != nil {
-		log.Fatalf("[ERROR] %v", err)
-	}
-	// 데이터 추출
-	var list []ECR
-	for _, repository := range resp.Repositories {
-		// 저장소 정보 생성
-		info := ECR{
-			Arn:  *repository.RepositoryArn,
-			Name: *repository.RepositoryName,
-			Uri:  *repository.RepositoryUri,
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			log.Fatalf("[ERROR] %v", err)
 		}
-		// 목록에 추가
-		list = append(list, info)
+		// 데이터 추출
+		for _, repository := range resp.Repositories {
+			// 저장소 정보 생성
+			info := ECR{
+				Arn:  *repository.RepositoryArn,
+				Name: *repository.RepositoryName,
+				Uri:  *repository.RepositoryUri,
+			}
+			// 목록에 추가
+			list = append(list, info)
+		}
 	}
 	// 결과 반환
 	return list

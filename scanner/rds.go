@@ -17,33 +17,39 @@ type DBInstance struct {
 	StorageType string
 }
 
-func getRDSInstances(cfg aws.Config) []DBInstance {
+func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
 	// 클라이언트 생성
-	client := rds.NewFromConfig(cfg)
+	client := rds.NewFromConfig(conf)
+
+	// 목록 생성
+	var list []DBInstance
+	// Paginator 생성
+	paginator := rds.NewDescribeDBInstancesPaginator(client, &rds.DescribeDBInstancesInput{MaxRecords: aws.Int32(100)})
 
 	// 데이터 조회
-	resp, err := client.DescribeDBInstances(context.TODO(), nil)
-	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
-	}
-	// 데이터 추출
-	var list []DBInstance
-	for _, dbInstance := range resp.DBInstances {
-		// 로드 밸런서 정보 생성
-		info := DBInstance{
-			Class: *dbInstance.DBInstanceClass,
-			Id:    *dbInstance.DBInstanceIdentifier,
-			Name: func(name *string) string {
-				if name != nil {
-					return *name
-				}
-				return ""
-			}(dbInstance.DBName),
-			State:       *dbInstance.DBInstanceStatus,
-			StorageType: *dbInstance.StorageType,
+	for paginator.HasMorePages() {
+		resp, err := paginator.NextPage(ctx)
+		if err != nil {
+			log.Fatalf("[ERROR] %s", err)
 		}
-		// 목록에 추가
-		list = append(list, info)
+		// 데이터 추출
+		for _, dbInstance := range resp.DBInstances {
+			// 로드 밸런서 정보 생성
+			info := DBInstance{
+				Class: *dbInstance.DBInstanceClass,
+				Id:    *dbInstance.DBInstanceIdentifier,
+				Name: func(name *string) string {
+					if name != nil {
+						return *name
+					}
+					return ""
+				}(dbInstance.DBName),
+				State:       *dbInstance.DBInstanceStatus,
+				StorageType: *dbInstance.StorageType,
+			}
+			// 목록에 추가
+			list = append(list, info)
+		}
 	}
 	// 결과 반환
 	return list
