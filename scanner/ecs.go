@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -34,16 +34,23 @@ func getECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
 	// Pagination
 	paginatorForCluster := ecs.NewListClustersPaginator(client, &ecs.ListClustersInput{MaxResults: aws.Int32(100)})
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginatorForCluster.HasMorePages() {
 		resp, err := paginatorForCluster.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %v", err)
+			panic(err)
 		}
 		// 클러스터 조회
 		clusters, err := client.DescribeClusters(ctx, &ecs.DescribeClustersInput{Clusters: resp.ClusterArns})
 		if err != nil {
-			log.Fatalf("[ERROR] %v", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, cluster := range clusters.Clusters {
@@ -55,13 +62,13 @@ func getECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
 			for paginatorForService.HasMorePages() {
 				output, err := paginatorForService.NextPage(ctx)
 				if err != nil {
-					log.Fatalf("[ERROR] %v", err)
+					panic(err)
 				}
 				// 서비스 정보 조회
 				if len(output.ServiceArns) > 0 {
 					rawServices, err := client.DescribeServices(ctx, &ecs.DescribeServicesInput{Cluster: cluster.ClusterArn, Services: output.ServiceArns})
 					if err != nil {
-						log.Fatalf("[ERROR] %v", err)
+						panic(err)
 					}
 					// 서비스 추출
 					for _, service := range rawServices.Services {

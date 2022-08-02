@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,11 +25,18 @@ func getECRRepositories(ctx context.Context, conf aws.Config) []ECR {
 	// Paginator 생성
 	paginator := ecr.NewDescribeRepositoriesPaginator(client, &ecr.DescribeRepositoriesInput{MaxResults: aws.Int32(100)})
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %v", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, repository := range resp.Repositories {

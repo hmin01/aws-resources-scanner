@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -19,17 +19,24 @@ func getDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
 	// 클라이언트 생성
 	client := dynamodb.NewFromConfig(cfg)
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	resp, err := client.ListTables(ctx, nil)
 	if err != nil {
-		log.Fatalf("[ERROR] %s", err)
+		panic(err)
 	}
 	// 데이터 추출
 	var list []Table
 	for _, table := range resp.TableNames {
 		result, err := client.DescribeTable(context.TODO(), &dynamodb.DescribeTableInput{TableName: aws.String(table)})
 		if err != nil {
-			log.Fatalf("[ERROR] %s", err)
+			panic(err)
 		}
 		// 테이블 정보 생성
 		info := Table{

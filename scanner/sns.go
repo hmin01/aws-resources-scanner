@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -28,18 +28,25 @@ func getSNSTopics(ctx context.Context, conf aws.Config) []SNS {
 	// Pagination
 	paginator := sns.NewListTopicsPaginator(client, nil)
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %v", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, topic := range resp.Topics {
 			// 속성 조회
 			attributes, err := client.GetTopicAttributes(ctx, &sns.GetTopicAttributesInput{TopicArn: topic.TopicArn})
 			if err != nil {
-				log.Fatalf("[ERROR] %v", err)
+				panic(err)
 			}
 			// 대기열 정보 생성
 			info := SNS{

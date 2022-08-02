@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -24,11 +24,18 @@ func getEFSStorages(ctx context.Context, conf aws.Config) []FileSystem {
 	// Paginator 생성
 	paginator := efs.NewDescribeFileSystemsPaginator(client, &efs.DescribeFileSystemsInput{MaxItems: aws.Int32(100)})
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %s", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, fileSystem := range resp.FileSystems {

@@ -14,6 +14,16 @@ type Resource struct {
 	Type  string `json:"type"`
 }
 
+// API Gateway 조회
+func GetApiGateways(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("apigateway", getApiGateways(ctx, config))
+}
+
+// Cognito 조회
+func GetCognitos(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("apigateway", getCognitoUserPools(ctx, config))
+}
+
 // Dynamodb 조회
 func GetDynamodbs(ctx context.Context, config aws.Config, resources chan<- Resource) {
 	resources <- getResources("dynamodb", getDynamodbTables(ctx, config))

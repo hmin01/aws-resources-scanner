@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -23,11 +23,18 @@ func getLoadBalancers(ctx context.Context, conf aws.Config) []LoadBalancer {
 	// Paginator 생성
 	paginator := elasticloadbalancingv2.NewDescribeLoadBalancersPaginator(client, &elasticloadbalancingv2.DescribeLoadBalancersInput{PageSize: aws.Int32(100)})
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %s", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, loadBalancer := range resp.LoadBalancers {

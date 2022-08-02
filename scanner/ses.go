@@ -2,7 +2,7 @@ package scanner
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	// AWS
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -23,11 +23,18 @@ func getSESIdentities(ctx context.Context, conf aws.Config) []SES {
 	// Pagination
 	paginator := sesv2.NewListEmailIdentitiesPaginator(client, &sesv2.ListEmailIdentitiesInput{PageSize: aws.Int32(1000)})
 
+	// Recover
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("[ERROR] %v\n", r)
+		}
+	}()
+
 	// 데이터 조회
 	for paginator.HasMorePages() {
 		resp, err := paginator.NextPage(ctx)
 		if err != nil {
-			log.Fatalf("[ERROR] %s", err)
+			panic(err)
 		}
 		// 데이터 추출
 		for _, identity := range resp.EmailIdentities {
