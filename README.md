@@ -13,6 +13,7 @@ Look up available regions within your account, get brief information about AWS r
 - ECS (Cluster, Service)
 - EFS (FileSystem)
 - ELB (LoadBalance)
+- Lambda (Function)
 - RDS (DBInstance)
 - SES (Identity)
 - SNS (Topic)
@@ -33,5 +34,5 @@ go build -o ./bin/<excutable_file>
 ```
 ### 2. Output
 ```
-./bin/<excutable_file>
+./bin/<excutable_file> <RoleArn>
 ```

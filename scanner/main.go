@@ -59,6 +59,11 @@ func GetELBs(ctx context.Context, config aws.Config, resources chan<- Resource) 
 	resources <- getResources("elb", getLoadBalancers(ctx, config))
 }
 
+// Lambda 조회
+func GetLambdas(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("lambda", getLambdaFunctions(ctx, config))
+}
+
 // RDS 조회
 func GetRDSs(ctx context.Context, config aws.Config, resources chan<- Resource) {
 	resources <- getResources("rds", getRDSInstances(ctx, config))

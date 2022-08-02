@@ -48,7 +48,7 @@ func getSNSTopics(ctx context.Context, conf aws.Config) []SNS {
 			if err != nil {
 				panic(err)
 			}
-			// 대기열 정보 생성
+			// SNS 정보 생성
 			info := SNS{
 				Arn:  *topic.TopicArn,
 				Fifo: func(status string) bool { return status == "true" }(attributes.Attributes["FifoTopic"]),

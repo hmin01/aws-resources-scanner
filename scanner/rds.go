@@ -41,7 +41,7 @@ func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
 		}
 		// 데이터 추출
 		for _, dbInstance := range resp.DBInstances {
-			// 로드 밸런서 정보 생성
+			// 데이터베이스 인스턴스 정보 생성
 			info := DBInstance{
 				Class: *dbInstance.DBInstanceClass,
 				Id:    *dbInstance.DBInstanceIdentifier,

@@ -11,7 +11,7 @@ import (
 	"main.com/util"
 )
 
-const TOTAL_OPS uint64 = 13
+const TOTAL_OPS uint64 = 14
 
 func main() {
 	// Init (커맨드라인에서 Argument 가져오기)
@@ -96,6 +96,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	go scanner.GetECSs(ctx, config, resources)
 	go scanner.GetEFSs(ctx, config, resources)
 	go scanner.GetELBs(ctx, config, resources)
+	go scanner.GetLambdas(ctx, config, resources)
 	go scanner.GetRDSs(ctx, config, resources)
 	go scanner.GetSESs(ctx, config, resources)
 	go scanner.GetSNSs(ctx, config, resources)
