@@ -10,18 +10,18 @@ import (
 )
 
 type ECSCluster struct {
-	Arn                     string
-	ContainerInstancesCount uint64
-	Name                    string
-	Services                []ECSService
+	Arn                     string       `json:"arn"`
+	ContainerInstancesCount uint64       `json:"containerInstanceCount"`
+	Name                    string       `json:"name"`
+	Services                []ECSService `json:"service"`
 }
 
 type ECSService struct {
-	Arn        string
-	LaunchType string
-	Name       string
-	Status     string
-	TasksCount map[string]uint64
+	Arn        string            `json:"arn"`
+	LaunchType string            `json:"launchType"`
+	Name       string            `json:"name"`
+	Status     string            `json:"status"`
+	TasksCount map[string]uint64 `json:"tasksCount"`
 }
 
 // ECS 클러스트 목록 조회

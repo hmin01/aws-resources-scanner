@@ -10,11 +10,11 @@ import (
 )
 
 type DBInstance struct {
-	Class       string
-	Id          string
-	Name        string
-	State       string
-	StorageType string
+	Class       string `json:"class"`
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	State       string `json:"state"`
+	StorageType string `json:"storageType"`
 }
 
 func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {

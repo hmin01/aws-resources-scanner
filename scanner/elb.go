@@ -10,8 +10,10 @@ import (
 )
 
 type LoadBalancer struct {
-	Name string
-	Type string
+	Arn    string `json:"arn"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
+	Type   string `json:"type"`
 }
 
 func getLoadBalancers(ctx context.Context, conf aws.Config) []LoadBalancer {
@@ -40,8 +42,10 @@ func getLoadBalancers(ctx context.Context, conf aws.Config) []LoadBalancer {
 		for _, loadBalancer := range resp.LoadBalancers {
 			// 로드 밸런서 정보 생성
 			info := LoadBalancer{
-				Name: *loadBalancer.LoadBalancerName,
-				Type: string(loadBalancer.Type),
+				Arn:    *loadBalancer.LoadBalancerArn,
+				Name:   *loadBalancer.LoadBalancerName,
+				Status: string(loadBalancer.State.Code),
+				Type:   string(loadBalancer.Type),
 			}
 			// 목록에 추가
 			list = append(list, info)

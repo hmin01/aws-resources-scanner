@@ -10,11 +10,11 @@ import (
 )
 
 type LambdaFunction struct {
-	Arn     string
-	Memory  uint64
-	Name    string
-	Runtime string
-	Timeout uint64
+	Arn     string `json:"arn"`
+	Memory  uint64 `json:"memory"`
+	Name    string `json:"name"`
+	Runtime string `json:"runtime"`
+	Timeout uint64 `json:"timeout"`
 }
 
 func getLambdaFunctions(ctx context.Context, conf aws.Config) []LambdaFunction {

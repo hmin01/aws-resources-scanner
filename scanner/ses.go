@@ -10,8 +10,8 @@ import (
 )
 
 type SES struct {
-	Name string
-	Type string
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func getSESIdentities(ctx context.Context, conf aws.Config) []SES {
