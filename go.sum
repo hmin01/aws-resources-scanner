@@ -23,6 +23,8 @@ github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.11 h1:dLu3dF3ruiSZsG+in4Zz
 github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.11/go.mod h1:Hb+D/fjqxVd1jAkIjTZF8Cg540F3E4YK5Uu4unA3rS0=
 github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.12.9 h1:MkWoCyvIqAhaMO+LTSFag8s0wd6zV6Pd+X0urDKn2I8=
 github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.12.9/go.mod h1:Va1mvuuqN0pejuszzc1nMPAsqGbIqIxBowdXzPYR9Gw=
+github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.5 h1:MWmwy+Py1HXLNILagezUP9JPEV4CS33tU8xTJR65vMY=
+github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.5/go.mod h1:xi7heuDU7iKWmWhvGCpsEvBko0NylAm4cmiJoxJKv9w=
 github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.17.4 h1:OT+O6Ss46RqPJ+etxpAsjywopSbLUcHo5bKA8c+jyZI=
 github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.17.4/go.mod h1:aOBqe2KdUYLkRSVrR2qnzg8yJx39pxLY2i6im1+oPY0=
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.9 h1:QTPDno4J5TyfpPi3dqCZpD+y7wbHtHhUQwnNGUHUGvg=

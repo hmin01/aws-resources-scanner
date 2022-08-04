@@ -19,9 +19,14 @@ func GetApiGateways(ctx context.Context, config aws.Config, resources chan<- Res
 	resources <- getResources("apigateway", getApiGateways(ctx, config))
 }
 
+// CloudFront 조회
+func GetCloudFronts(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("cloudfront", getCloudFrontDistributions(ctx, config))
+}
+
 // Cognito 조회
 func GetCognitos(ctx context.Context, config aws.Config, resources chan<- Resource) {
-	resources <- getResources("apigateway", getCognitoUserPools(ctx, config))
+	resources <- getResources("cognito", getCognitoUserPools(ctx, config))
 }
 
 // Dynamodb 조회
