@@ -11,7 +11,11 @@ import (
 	"main.com/util"
 )
 
-const TOTAL_OPS uint64 = 14
+const DEFAULT_REGION string = "ap-northeast-2"
+
+// 작업 수
+const R_TOTAL_OPS uint64 = 14
+const G_TOTAL_OPS uint64 = 1
 
 func main() {
 	// Init (커맨드라인에서 Argument 가져오기)
@@ -24,7 +28,7 @@ func main() {
 	// 작업 카운트
 	var ops int = 0
 
-	config := scanner.Configuration("ap-northeast-2")
+	config := scanner.Configuration(DEFAULT_REGION)
 	// 사용 가능한 리전 조회
 	regions := scanner.GetRegions(config)
 	// regions := []string{"ap-northeast-2"}
@@ -47,6 +51,8 @@ func main() {
 		// 작업 수행
 		go ScanResources(region, integrations)
 	}
+	// 글로벌 리소스 조회 (병렬)
+	go ScanGlobalResources(integrations)
 	// 로그 출력
 	fmt.Printf("%s\n\n", stmt)
 
@@ -112,7 +118,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 		// 작업 완료 카운트
 		ops += 1
 		// 모든 작업 완료 여부 확인
-		if ops == TOTAL_OPS {
+		if ops == R_TOTAL_OPS {
 			// 채널 종료
 			close(resources)
 			// 완료된 데이터를 채널로 전송
@@ -123,6 +129,42 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 			}
 			// Log
 			fmt.Printf("[NOTICE] %s 에 대한 리소스 조회 완료\n", region)
+		}
+	}
+}
+
+// 글로벌 서비스 조회
+func ScanGlobalResources(result chan<- util.ResourceByRegion) {
+	// Context 생성
+	ctx := context.TODO()
+	// 데이터 처리를 위한 채널 생성
+	resources := make(chan scanner.Resource, 10)
+	// 스캔을 위한 AWS 설정
+	config := scanner.Configuration(DEFAULT_REGION)
+	// 통합된 리소스 데이터
+	integration := make(map[string]any)
+	// 작업 카운트
+	var ops uint64 = 0
+
+	// 각 리소스 조회
+	go scanner.GetS3s(ctx, config, resources)
+
+	for resource := range resources {
+		// 리소스 통합
+		integration[resource.Type] = resource.Data
+		// 작업 완료 카운트
+		ops += 1
+		// 모든 작업 완료 여부 확인
+		if ops == G_TOTAL_OPS {
+			// 채널 종료
+			close(resources)
+			// 완료된 데이터를 채널로 전송
+			result <- util.ResourceByRegion{
+				Region:    "global",
+				Resources: integration,
+			}
+			// Log
+			fmt.Println("[NOTICE] Global에 대한 리소스 조회 완료")
 		}
 	}
 }

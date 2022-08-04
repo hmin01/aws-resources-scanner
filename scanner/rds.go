@@ -10,11 +10,14 @@ import (
 )
 
 type DBInstance struct {
-	Class       string `json:"class"`
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	State       string `json:"state"`
-	StorageType string `json:"storageType"`
+	AllocatedStorage uint64 `json:"allocatedStorage"`
+	Class            string `json:"class"`
+	Engine           string `json:"engine"`
+	Id               string `json:"id"`
+	MultiAZ          bool   `json:"multiAZ"`
+	Name             string `json:"name"`
+	Status           string `json:"status"`
+	StorageType      string `json:"storageType"`
 }
 
 func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
@@ -43,15 +46,18 @@ func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
 		for _, dbInstance := range resp.DBInstances {
 			// 데이터베이스 인스턴스 정보 생성
 			info := DBInstance{
-				Class: *dbInstance.DBInstanceClass,
-				Id:    *dbInstance.DBInstanceIdentifier,
+				AllocatedStorage: uint64(dbInstance.AllocatedStorage),
+				Class:            *dbInstance.DBInstanceClass,
+				Engine:           *dbInstance.Engine,
+				Id:               *dbInstance.DBInstanceIdentifier,
+				MultiAZ:          dbInstance.MultiAZ,
 				Name: func(name *string) string {
 					if name != nil {
 						return *name
 					}
 					return ""
 				}(dbInstance.DBName),
-				State:       *dbInstance.DBInstanceStatus,
+				Status:      *dbInstance.DBInstanceStatus,
 				StorageType: *dbInstance.StorageType,
 			}
 			// 목록에 추가

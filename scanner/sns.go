@@ -16,7 +16,7 @@ type SNS struct {
 	Arn          string            `json:"arn"`
 	Fifo         bool              `json:"fifo"`
 	Name         string            `json:"name"`
-	Subscription map[string]uint64 `json:"subcription"`
+	Subscription map[string]uint64 `json:"subscription"`
 }
 
 func getSNSTopics(ctx context.Context, conf aws.Config) []SNS {
@@ -54,8 +54,8 @@ func getSNSTopics(ctx context.Context, conf aws.Config) []SNS {
 				Fifo: func(status string) bool { return status == "true" }(attributes.Attributes["FifoTopic"]),
 				Name: attributes.Attributes["DisplayName"],
 				Subscription: map[string]uint64{
-					"Confirmed": uint64(util.StringToInteger(attributes.Attributes["SubscriptionsConfirmed"])),
-					"Pending":   uint64(util.StringToInteger(attributes.Attributes["SubscriptionsPending"])),
+					"confirmed": uint64(util.StringToInteger(attributes.Attributes["SubscriptionsConfirmed"])),
+					"pending":   uint64(util.StringToInteger(attributes.Attributes["SubscriptionsPending"])),
 				},
 			}
 			// 목록에 추가

@@ -13,7 +13,7 @@ type ECSCluster struct {
 	Arn                     string       `json:"arn"`
 	ContainerInstancesCount uint64       `json:"containerInstanceCount"`
 	Name                    string       `json:"name"`
-	Services                []ECSService `json:"service"`
+	Services                []ECSService `json:"services"`
 }
 
 type ECSService struct {
@@ -79,8 +79,8 @@ func getECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
 							Name:       *service.ServiceName,
 							Status:     *service.Status,
 							TasksCount: map[string]uint64{
-								"Pending": uint64(service.PendingCount),
-								"Running": uint64(service.RunningCount),
+								"pending": uint64(service.PendingCount),
+								"running": uint64(service.RunningCount),
 							},
 						}
 						// 목록에 추가

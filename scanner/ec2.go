@@ -11,17 +11,17 @@ import (
 
 // EC2 인스턴스에 대한 정보
 type Instance struct {
-	Id    string `json:"id"`
-	Type  string `json:"type"`
-	State string `json:"state"`
+	Id     string `json:"id"`
+	Type   string `json:"type"`
+	Status string `json:"status"`
 }
 
 // EBS 볼륨에 대한 정보
 type Volume struct {
-	Id    string `json:"id"`
-	Type  string `json:"type"`
-	Size  int32  `json:"size"`
-	State string `json:"state"`
+	Id     string `json:"id"`
+	Type   string `json:"type"`
+	Size   int32  `json:"size"`
+	Status string `json:"status"`
 }
 
 // EC2 인스턴스 목록 조회
@@ -52,9 +52,9 @@ func getEC2Instances(ctx context.Context, conf aws.Config) []Instance {
 			for _, instance := range elem.Instances {
 				// 인스턴스 정보 생성
 				info := Instance{
-					Id:    *instance.InstanceId,
-					Type:  string(instance.InstanceType),
-					State: string(instance.State.Name),
+					Id:     *instance.InstanceId,
+					Type:   string(instance.InstanceType),
+					Status: string(instance.State.Name),
 				}
 				// 목록에 추가
 				list = append(list, info)
@@ -92,10 +92,10 @@ func getEBSVolumes(ctx context.Context, conf aws.Config) []Volume {
 		for _, volume := range resp.Volumes {
 			info := Volume{
 				// 볼륨 정보 생성
-				Id:    *volume.VolumeId,
-				Type:  string(volume.VolumeType),
-				Size:  *volume.Size,
-				State: string(volume.State),
+				Id:     *volume.VolumeId,
+				Type:   string(volume.VolumeType),
+				Size:   *volume.Size,
+				Status: string(volume.State),
 			}
 			// 목록에 추가
 			list = append(list, info)
