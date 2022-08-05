@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type CognitoUserPool struct {
 	Status string `json:"status"`
 }
 
-func getCognitoUserPools(ctx context.Context, conf aws.Config) []CognitoUserPool {
+func GetCognitoUserPools(ctx context.Context, conf aws.Config) []CognitoUserPool {
 	// 클라이언트 생성
 	client := cognitoidentityprovider.NewFromConfig(conf)
 

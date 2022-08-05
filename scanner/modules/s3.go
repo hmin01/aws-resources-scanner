@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type Bucket struct {
 }
 
 // S3 버킷 조회
-func getS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
+func GetS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
 	// 클라이언트 생성
 	client := s3.NewFromConfig(cfg)
 

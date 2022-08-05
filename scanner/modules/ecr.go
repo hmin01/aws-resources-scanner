@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type ECR struct {
 }
 
 // ECR 저장소 목록 조회
-func getECRRepositories(ctx context.Context, conf aws.Config) []ECR {
+func GetECRRepositories(ctx context.Context, conf aws.Config) []ECR {
 	// 클라이언트 생성
 	client := ecr.NewFromConfig(conf)
 

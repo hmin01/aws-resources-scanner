@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type SNS struct {
 	Subscription map[string]uint64 `json:"subscription"`
 }
 
-func getSNSTopics(ctx context.Context, conf aws.Config) []SNS {
+func GetSNSTopics(ctx context.Context, conf aws.Config) []SNS {
 	// 클라이언트 생성
 	client := sns.NewFromConfig(conf)
 

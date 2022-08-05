@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -14,7 +14,7 @@ type SES struct {
 	Type string `json:"type"`
 }
 
-func getSESIdentities(ctx context.Context, conf aws.Config) []SES {
+func GetSESIdentities(ctx context.Context, conf aws.Config) []SES {
 	// 클라이언트 생성
 	client := sesv2.NewFromConfig(conf)
 

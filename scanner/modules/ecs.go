@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type ECSService struct {
 }
 
 // ECS 클러스트 목록 조회
-func getECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
+func GetECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
 	// 클라이언트 생성
 	client := ecs.NewFromConfig(conf)
 
