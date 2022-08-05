@@ -145,6 +145,8 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 	integration := make(map[string]any)
 	// 작업 카운트
 	var ops uint64 = 0
+	// 글로벌 서비스 사용 여부 (리소스 존재 여부)
+	var usage bool = false
 
 	// 각 리소스 조회
 	go scanner.GetCloudFronts(ctx, config, resources)
@@ -155,6 +157,10 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 		integration[resource.Type] = resource.Data
 		// 작업 완료 카운트
 		ops += 1
+		// 리소스 존재 여부
+		if !usage && resource.Count > 0 {
+			usage = true
+		}
 		// 모든 작업 완료 여부 확인
 		if ops == G_TOTAL_OPS {
 			// 채널 종료
@@ -163,6 +169,7 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 			result <- util.ResourceByRegion{
 				Region:    "global",
 				Resources: integration,
+				Usage:     usage,
 			}
 			// Log
 			fmt.Println("[NOTICE] global 에 대한 리소스 조회 완료")

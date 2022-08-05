@@ -10,8 +10,8 @@ import (
 )
 
 type Bucket struct {
-	Loction string
-	Name    string
+	Loction string `json:"location"`
+	Name    string `json:"name"`
 }
 
 // S3 버킷 조회
