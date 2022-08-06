@@ -19,6 +19,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.12.9 // indirect
+	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.17.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.0 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.8 // indirect
+	github.com/aws/aws-sdk-go-v2/service/lambda v1.23.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/rds v1.23.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sesv2 v1.13.10 // indirect

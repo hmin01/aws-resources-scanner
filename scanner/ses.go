@@ -10,8 +10,8 @@ import (
 )
 
 type SES struct {
-	Name string
-	Type string
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func getSESIdentities(ctx context.Context, conf aws.Config) []SES {
@@ -38,7 +38,7 @@ func getSESIdentities(ctx context.Context, conf aws.Config) []SES {
 		}
 		// 데이터 추출
 		for _, identity := range resp.EmailIdentities {
-			// 대기열 정보 생성
+			// SES 정보 생성
 			info := SES{
 				Name: *identity.IdentityName,
 				Type: string(identity.IdentityType),

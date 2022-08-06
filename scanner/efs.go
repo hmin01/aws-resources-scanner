@@ -10,9 +10,9 @@ import (
 )
 
 type FileSystem struct {
-	Id   string
-	Name string
-	Size int64
+	Id   string `json:"id"`
+	Name string `json:"name"`
+	Size int64  `json:"size"`
 }
 
 func getEFSStorages(ctx context.Context, conf aws.Config) []FileSystem {

@@ -10,9 +10,9 @@ import (
 )
 
 type ECR struct {
-	Arn  string
-	Name string
-	Uri  string
+	Arn  string `json:"arn"`
+	Name string `json:"name"`
+	Uri  string `json:"uri"`
 }
 
 // ECR 저장소 목록 조회

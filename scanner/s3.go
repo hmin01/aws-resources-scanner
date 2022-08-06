@@ -10,9 +10,11 @@ import (
 )
 
 type Bucket struct {
-	Name string
+	Loction string `json:"location"`
+	Name    string `json:"name"`
 }
 
+// S3 버킷 조회
 func getS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
 	// 클라이언트 생성
 	client := s3.NewFromConfig(cfg)
@@ -32,9 +34,15 @@ func getS3Buckets(ctx context.Context, cfg aws.Config) []Bucket {
 	// 데이터 추출
 	var list []Bucket
 	for _, bucket := range resp.Buckets {
-		// 로드 밸런서 정보 생성
+		// 버켓에 대한 리전 확인
+		output, err := client.GetBucketLocation(ctx, &s3.GetBucketLocationInput{Bucket: bucket.Name})
+		if err != nil {
+			panic(err)
+		}
+		// 버킷 정보 생성
 		info := Bucket{
-			Name: *bucket.Name,
+			Loction: string(output.LocationConstraint),
+			Name:    *bucket.Name,
 		}
 		// 목록에 추가
 		list = append(list, info)

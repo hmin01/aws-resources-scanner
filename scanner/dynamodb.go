@@ -10,9 +10,9 @@ import (
 )
 
 type Table struct {
-	Id    string
-	Name  string
-	State string
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
 
 func getDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
@@ -40,9 +40,9 @@ func getDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
 		}
 		// 테이블 정보 생성
 		info := Table{
-			Id:    *result.Table.TableId,
-			Name:  *result.Table.TableName,
-			State: string(result.Table.TableStatus),
+			Id:     *result.Table.TableId,
+			Name:   *result.Table.TableName,
+			Status: string(result.Table.TableStatus),
 		}
 		// 목록에 추가
 		list = append(list, info)

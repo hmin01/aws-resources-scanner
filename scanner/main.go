@@ -19,9 +19,14 @@ func GetApiGateways(ctx context.Context, config aws.Config, resources chan<- Res
 	resources <- getResources("apigateway", getApiGateways(ctx, config))
 }
 
+// CloudFront 조회
+func GetCloudFronts(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("cloudfront", getCloudFrontDistributions(ctx, config))
+}
+
 // Cognito 조회
 func GetCognitos(ctx context.Context, config aws.Config, resources chan<- Resource) {
-	resources <- getResources("apigateway", getCognitoUserPools(ctx, config))
+	resources <- getResources("cognito", getCognitoUserPools(ctx, config))
 }
 
 // Dynamodb 조회
@@ -57,6 +62,11 @@ func GetEFSs(ctx context.Context, config aws.Config, resources chan<- Resource) 
 // ELB 조회
 func GetELBs(ctx context.Context, config aws.Config, resources chan<- Resource) {
 	resources <- getResources("elb", getLoadBalancers(ctx, config))
+}
+
+// Lambda 조회
+func GetLambdas(ctx context.Context, config aws.Config, resources chan<- Resource) {
+	resources <- getResources("lambda", getLambdaFunctions(ctx, config))
 }
 
 // RDS 조회

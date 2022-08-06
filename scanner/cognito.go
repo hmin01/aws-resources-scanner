@@ -10,9 +10,9 @@ import (
 )
 
 type CognitoUserPool struct {
-	Id     string
-	Name   string
-	Status string
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
 
 func getCognitoUserPools(ctx context.Context, conf aws.Config) []CognitoUserPool {

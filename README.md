@@ -6,6 +6,7 @@ Look up available regions within your account, get brief information about AWS r
 
 ## Services currently available for inquiry
 - APIGateway
+- CloudFront (Distribution)
 - Cognito (UserPool)
 - EBS (Volume)
 - EC2 (Instance)
@@ -13,25 +14,28 @@ Look up available regions within your account, get brief information about AWS r
 - ECS (Cluster, Service)
 - EFS (FileSystem)
 - ELB (LoadBalance)
+- Lambda (Function)
 - RDS (DBInstance)
+- S3 (Bucket)
 - SES (Identity)
 - SNS (Topic)
 - SQS (Queue)
 
 ## Development scheduled
-Global services such as S3, CloudFont have not yet been implemented due to result display issues...
-- S3 (Bucket)
-- CloudFront (Distribution)
+Scan and represent data for various resources such as Internat and NAT Gateway, Endpoint for vpc configuration.
+
+be going to implement a search for other resources you need.
 
 ## How to use?
-### 0. Installation Golang
-"Go" is basically used, so "Go" must be installed in advance.
-[Installation Golang](https://go.dev/doc/install)
+### 0. Prior requirements
+"Go" is basically used, so "Go" must be installed in advance. [Installation Golang](https://go.dev/doc/install)
+
+also, need an AWS IAM role arn with a "ReadOnlyAccess" policy for resource scanning.
 ### 1. Build
 ```
 go build -o ./bin/<excutable_file>
 ```
 ### 2. Output
 ```
-./bin/<excutable_file>
+./bin/<excutable_file> <RoleArnForScan>
 ```

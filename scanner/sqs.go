@@ -11,9 +11,9 @@ import (
 )
 
 type Queue struct {
-	Fifo bool
-	Name string
-	Url  string
+	Fifo bool   `json:"fifo"`
+	Name string `json:"name"`
+	Url  string `json:"url"`
 }
 
 func getSQSQueues(ctx context.Context, conf aws.Config) []Queue {

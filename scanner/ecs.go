@@ -10,18 +10,18 @@ import (
 )
 
 type ECSCluster struct {
-	Arn                     string
-	ContainerInstancesCount uint64
-	Name                    string
-	Services                []ECSService
+	Arn                     string       `json:"arn"`
+	ContainerInstancesCount uint64       `json:"containerInstanceCount"`
+	Name                    string       `json:"name"`
+	Services                []ECSService `json:"services"`
 }
 
 type ECSService struct {
-	Arn        string
-	LaunchType string
-	Name       string
-	Status     string
-	TasksCount map[string]uint64
+	Arn        string            `json:"arn"`
+	LaunchType string            `json:"launchType"`
+	Name       string            `json:"name"`
+	Status     string            `json:"status"`
+	TasksCount map[string]uint64 `json:"tasksCount"`
 }
 
 // ECS 클러스트 목록 조회
@@ -79,8 +79,8 @@ func getECSClusters(ctx context.Context, conf aws.Config) []ECSCluster {
 							Name:       *service.ServiceName,
 							Status:     *service.Status,
 							TasksCount: map[string]uint64{
-								"Pending": uint64(service.PendingCount),
-								"Running": uint64(service.RunningCount),
+								"pending": uint64(service.PendingCount),
+								"running": uint64(service.RunningCount),
 							},
 						}
 						// 목록에 추가
