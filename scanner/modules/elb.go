@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type LoadBalancer struct {
 	Type   string `json:"type"`
 }
 
-func getLoadBalancers(ctx context.Context, conf aws.Config) []LoadBalancer {
+func GetLoadBalancers(ctx context.Context, conf aws.Config) []LoadBalancer {
 	// 클라이언트 생성
 	client := elasticloadbalancingv2.NewFromConfig(conf)
 

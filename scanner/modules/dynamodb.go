@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type Table struct {
 	Status string `json:"status"`
 }
 
-func getDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
+func GetDynamodbTables(ctx context.Context, cfg aws.Config) []Table {
 	// 클라이언트 생성
 	client := dynamodb.NewFromConfig(cfg)
 

@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type FileSystem struct {
 	Size int64  `json:"size"`
 }
 
-func getEFSStorages(ctx context.Context, conf aws.Config) []FileSystem {
+func GetEFSStorages(ctx context.Context, conf aws.Config) []FileSystem {
 	// 클라이언트 생성
 	client := efs.NewFromConfig(conf)
 

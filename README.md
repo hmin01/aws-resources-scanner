@@ -6,17 +6,22 @@ Look up available regions within your account, get brief information about AWS r
 
 ## Services currently available for inquiry
 - APIGateway
-- CloudFront (Distribution)
+- CloudFront (Distribution) / Global
 - Cognito (UserPool)
 - EBS (Volume)
 - EC2 (Instance)
 - ECR (Regository)
 - ECS (Cluster, Service)
 - EFS (FileSystem)
+- Elasticache (ReplicationGroup, Cluster)
+- Elastic Beanstalk (Application, Environment)
+- ELB (LoadBalance)
 - ELB (LoadBalance)
 - Lambda (Function)
+- QLDB (Ledger)
 - RDS (DBInstance)
-- S3 (Bucket)
+- Route53 (Hosted Zone) / Global
+- S3 (Bucket) / Global
 - SES (Identity)
 - SNS (Topic)
 - SQS (Queue)

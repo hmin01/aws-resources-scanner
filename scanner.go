@@ -7,19 +7,15 @@ import (
 	"time"
 
 	// Custom
-	"main.com/scanner"
+	scan "main.com/scanner"
 	"main.com/util"
 )
 
 const DEFAULT_REGION string = "ap-northeast-2"
 
-// 작업 수
-const R_TOTAL_OPS uint64 = 14
-const G_TOTAL_OPS uint64 = 2
-
 func main() {
 	// Init (커맨드라인에서 Argument 가져오기)
-	scanner.Init()
+	scan.Init()
 
 	// 작업 결과 채널 생성
 	integrations := make(chan util.ResourceByRegion, 10)
@@ -28,9 +24,9 @@ func main() {
 	// 작업 카운트
 	var ops int = 0
 
-	config := scanner.Configuration(DEFAULT_REGION)
+	config := scan.Configuration(DEFAULT_REGION)
 	// 사용 가능한 리전 조회
-	regions := scanner.GetRegions(config)
+	regions := scan.GetRegions(config)
 	// regions := []string{"ap-northeast-2"}
 	// 사용 가능 리전이 없을 경우, 종료
 	if len(regions) == 0 {
@@ -82,9 +78,9 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	// Context 생성
 	ctx := context.TODO()
 	// 데이터 처리를 위한 채널 생성
-	resources := make(chan scanner.Resource, 20)
+	resources := make(chan scan.Resource, 20)
 	// 스캔을 위한 AWS 설정
-	config := scanner.Configuration(region)
+	config := scan.Configuration(region)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -92,21 +88,27 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	// 해당 리전 사용 여부 (리소스 존재 여부)
 	var usage bool = false
 
+	// 스캐너 생성
+	scanner := scan.CreateScanner(ctx, config, resources)
 	// 각 리소스 조회
-	go scanner.GetApiGateways(ctx, config, resources)
-	go scanner.GetCognitos(ctx, config, resources)
-	go scanner.GetDynamodbs(ctx, config, resources)
-	go scanner.GetEBSs(ctx, config, resources)
-	go scanner.GetEC2s(ctx, config, resources)
-	go scanner.GetECRs(ctx, config, resources)
-	go scanner.GetECSs(ctx, config, resources)
-	go scanner.GetEFSs(ctx, config, resources)
-	go scanner.GetELBs(ctx, config, resources)
-	go scanner.GetLambdas(ctx, config, resources)
-	go scanner.GetRDSs(ctx, config, resources)
-	go scanner.GetSESs(ctx, config, resources)
-	go scanner.GetSNSs(ctx, config, resources)
-	go scanner.GetSQSs(ctx, config, resources)
+	go scanner.GetApiGateways()
+	go scanner.GetCognitos()
+	go scanner.GetDynamodbs()
+	go scanner.GetEBSs()
+	go scanner.GetEC2s()
+	go scanner.GetECRs()
+	go scanner.GetECSs()
+	go scanner.GetEFSs()
+	go scanner.GetElasticaches()
+	go scanner.GetElasticBeanstalks()
+	go scanner.GetELBs()
+	go scanner.GetEventBridges()
+	go scanner.GetLambdas()
+	go scanner.GetQLDBs()
+	go scanner.GetRDSs()
+	go scanner.GetSESs()
+	go scanner.GetSNSs()
+	go scanner.GetSQSs()
 
 	for resource := range resources {
 		// 리소스 통합
@@ -118,7 +120,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 		// 작업 완료 카운트
 		ops += 1
 		// 모든 작업 완료 여부 확인
-		if ops == R_TOTAL_OPS {
+		if ops == scanner.R_OPS() {
 			// 채널 종료
 			close(resources)
 			// 완료된 데이터를 채널로 전송
@@ -138,9 +140,9 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 	// Context 생성
 	ctx := context.TODO()
 	// 데이터 처리를 위한 채널 생성
-	resources := make(chan scanner.Resource, 2)
+	resources := make(chan scan.Resource, 2)
 	// 스캔을 위한 AWS 설정
-	config := scanner.Configuration(DEFAULT_REGION)
+	config := scan.Configuration(DEFAULT_REGION)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -148,9 +150,12 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 	// 글로벌 서비스 사용 여부 (리소스 존재 여부)
 	var usage bool = false
 
+	// 스캐너 생성
+	scanner := scan.CreateScanner(ctx, config, resources)
 	// 각 리소스 조회
-	go scanner.GetCloudFronts(ctx, config, resources)
-	go scanner.GetS3s(ctx, config, resources)
+	go scanner.GetCloudFronts()
+	go scanner.GetRoute53s()
+	go scanner.GetS3s()
 
 	for resource := range resources {
 		// 리소스 통합
@@ -162,7 +167,7 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 			usage = true
 		}
 		// 모든 작업 완료 여부 확인
-		if ops == G_TOTAL_OPS {
+		if ops == scanner.G_OPS() {
 			// 채널 종료
 			close(resources)
 			// 완료된 데이터를 채널로 전송

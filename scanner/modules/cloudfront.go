@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -28,7 +28,7 @@ type Origin struct {
 }
 
 // CloudFront 배포 조회
-func getCloudFrontDistributions(ctx context.Context, cfg aws.Config) []Distribution {
+func GetCloudFrontDistributions(ctx context.Context, cfg aws.Config) []Distribution {
 	// 클라이언트 생성
 	client := cloudfront.NewFromConfig(cfg)
 

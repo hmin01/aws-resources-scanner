@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type ApiGatway struct {
 	Protocol string `json:"protocol,omitempty"`
 }
 
-func getApiGateways(ctx context.Context, conf aws.Config) []ApiGatway {
+func GetApiGateways(ctx context.Context, conf aws.Config) []ApiGatway {
 	// 클라이언트 생성 (v1 is REST API)
 	clientForV1 := apigateway.NewFromConfig(conf)
 	// 클라이언트 생성 (v2 is HTTP, WebSocket)

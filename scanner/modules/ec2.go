@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type Volume struct {
 }
 
 // EC2 인스턴스 목록 조회
-func getEC2Instances(ctx context.Context, conf aws.Config) []Instance {
+func GetEC2Instances(ctx context.Context, conf aws.Config) []Instance {
 	// EC2 클라이언트 생성
 	client := ec2.NewFromConfig(conf)
 
@@ -66,7 +66,7 @@ func getEC2Instances(ctx context.Context, conf aws.Config) []Instance {
 }
 
 // EBS 볼륨 목록 조회
-func getEBSVolumes(ctx context.Context, conf aws.Config) []Volume {
+func GetEBSVolumes(ctx context.Context, conf aws.Config) []Volume {
 	// EC2 클라이언트 생성
 	client := ec2.NewFromConfig(conf)
 

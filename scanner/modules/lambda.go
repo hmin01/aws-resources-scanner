@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type LambdaFunction struct {
 	Timeout uint64 `json:"timeout"`
 }
 
-func getLambdaFunctions(ctx context.Context, conf aws.Config) []LambdaFunction {
+func GetLambdaFunctions(ctx context.Context, conf aws.Config) []LambdaFunction {
 	// 클라이언트 생성
 	client := lambda.NewFromConfig(conf)
 

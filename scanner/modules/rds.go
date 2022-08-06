@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type DBInstance struct {
 	StorageType      string `json:"storageType"`
 }
 
-func getRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
+func GetRDSInstances(ctx context.Context, conf aws.Config) []DBInstance {
 	// 클라이언트 생성
 	client := rds.NewFromConfig(conf)
 

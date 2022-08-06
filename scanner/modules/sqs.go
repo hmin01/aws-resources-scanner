@@ -1,4 +1,4 @@
-package scanner
+package modules
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type Queue struct {
 	Url  string `json:"url"`
 }
 
-func getSQSQueues(ctx context.Context, conf aws.Config) []Queue {
+func GetSQSQueues(ctx context.Context, conf aws.Config) []Queue {
 	// 클라이언트 생성
 	client := sqs.NewFromConfig(conf)
 
