@@ -1,13 +1,13 @@
-package scanner
+package aws
 
 import (
 	"context"
 	"log"
-	"os"
-	"strings"
+	_ "os"
+	_ "strings"
 
 	// AWS
-	"github.com/aws/aws-sdk-go-v2/aws"
+	awsType "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -16,19 +16,21 @@ import (
 
 var RoleArn string = ""
 
-func Init() {
-	// 커맨드라인 Argument 확인
-	if len(os.Args) == 1 {
-		log.Fatalln("[COMMAND ERROR] AWS IAM Role에 대한 ARN은 필수입니다.")
-	} else if len(os.Args) > 2 {
-		log.Fatalln("[COMMAND ERROR] Argument가 너무 많습니다.")
-	}
-	// 커맨드라인 Argument에서 Role arn 가져오기
-	RoleArn = strings.Join(os.Args[1:2], "")
+func Init(role string) {
+	// // 커맨드라인 Argument 확인
+	// if len(os.Args) == 1 {
+	// 	log.Fatalln("[COMMAND ERROR] AWS IAM Role에 대한 ARN은 필수입니다.")
+	// } else if len(os.Args) > 2 {
+	// 	log.Fatalln("[COMMAND ERROR] Argument가 너무 많습니다.")
+	// }
+	// // 커맨드라인 Argument에서 Role arn 가져오기
+	// RoleArn = strings.Join(os.Args[1:2], "")
+	// Role arn 설정
+	RoleArn = role
 }
 
 // AWS SDK를 위한 설정 함수
-func Configuration(region string) aws.Config {
+func ConfigurationInternal(region string) awsType.Config {
 	// Context 생성
 	ctx := context.TODO()
 	// AWS Configuration
@@ -36,19 +38,26 @@ func Configuration(region string) aws.Config {
 	if err != nil {
 		log.Fatalf("[CONFIG ERROR], %v", err)
 	}
+	// 설정 반환
+	return conf
+}
 
+// AWS SDK를 위한 설정 함수 (STS을 이용한 타계정 설정)
+func Configuration(region string) awsType.Config {
+	// Context 생성
+	conf := ConfigurationInternal(region)
 	// STS 클라이언트 생성
 	client := sts.NewFromConfig(conf)
 	// Credentials 생성
 	credentials := stscreds.NewAssumeRoleProvider(client, RoleArn)
 	// Configuration에 Credentials 추가
-	conf.Credentials = aws.NewCredentialsCache(credentials)
+	conf.Credentials = awsType.NewCredentialsCache(credentials)
 	// 설정 반환
 	return conf
 }
 
 // 사용 가능한 리전 조회
-func GetRegions(config aws.Config) []string {
+func GetRegions(config awsType.Config) []string {
 	// 클라이언트 생성
 	client := ec2.NewFromConfig(config)
 	// SDK 호출

@@ -4,6 +4,8 @@ A project to query AWS resource in use within one AWS account
 
 Look up available regions within your account, get brief information about AWS resources in use within that region, and create a list.
 
+The project is used as an AWS Lambda handler and can be deployed automatically by changing the function name within the "deploy.sh" file.
+
 ## Services currently available for inquiry
 - APIGateway
 - CloudFront (Distribution) / Global
@@ -37,10 +39,7 @@ be going to implement a search for other resources you need.
 
 also, need an AWS IAM role arn with a "ReadOnlyAccess" policy for resource scanning.
 ### 1. Build
-```
-go build -o ./bin/<excutable_file>
-```
-### 2. Output
-```
-./bin/<excutable_file> <RoleArnForScan>
-```
+Build can be performed using "build.sh" file within the project.
+
+### 2. Deploy
+Build can be performed using "deploy.sh" file within the project.

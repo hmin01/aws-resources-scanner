@@ -2,20 +2,36 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
-	// Custom
+	// AWS
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+
+	// Local
+	awsConf "main.com/aws"
 	scan "main.com/scanner"
 	"main.com/util"
 )
 
 const DEFAULT_REGION string = "ap-northeast-2"
 
+// Process Key
+var PROCESS_KEY string = ""
+
 func main() {
-	// Init (커맨드라인에서 Argument 가져오기)
-	scan.Init()
+	lambda.Start(HandleRequest)
+}
+
+func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// // Init (커맨드라인에서 Argument 가져오기)
+	// scan.Init()
+
+	// Init
+	Init(request.Body)
 
 	// 작업 결과 채널 생성
 	integrations := make(chan util.ResourceByRegion, 10)
@@ -24,9 +40,9 @@ func main() {
 	// 작업 카운트
 	var ops int = 0
 
-	config := scan.Configuration(DEFAULT_REGION)
+	config := awsConf.Configuration(DEFAULT_REGION)
 	// 사용 가능한 리전 조회
-	regions := scan.GetRegions(config)
+	regions := awsConf.GetRegions(config)
 	// regions := []string{"ap-northeast-2"}
 	// 사용 가능 리전이 없을 경우, 종료
 	if len(regions) == 0 {
@@ -68,8 +84,35 @@ func main() {
 			// 채널 종료
 			close(integrations)
 			// 결과 출력
-			util.Print(result)
+			util.Print(PROCESS_KEY, result)
 		}
+	}
+	// Return
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Body:       "Sucess",
+	}, nil
+}
+
+func Init(body string) {
+	// 데이터 변환
+	transformed := make(map[string]string)
+	err := json.Unmarshal([]byte(body), &transformed)
+	if err != nil {
+		log.Fatalf("[CONFIG ERROR] %v\n", err)
+	}
+	// 데이터 형식 확인
+	if roleArn, ok := transformed["role"]; ok {
+		if processKey, ok := transformed["key"]; ok {
+			// 초기 설정
+			awsConf.Init(roleArn)
+			// 작업 키 설정
+			PROCESS_KEY = processKey
+		} else {
+			log.Fatalln("[CONFIG ERROR] Not found role arn")
+		}
+	} else {
+		log.Fatalln("[CONFIG ERROR] Not found process key")
 	}
 }
 
@@ -80,7 +123,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	// 데이터 처리를 위한 채널 생성
 	resources := make(chan scan.Resource, 20)
 	// 스캔을 위한 AWS 설정
-	config := scan.Configuration(region)
+	config := awsConf.Configuration(region)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -129,8 +172,8 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 				Resources: integration,
 				Usage:     usage,
 			}
-			// Log
-			fmt.Printf("[NOTICE] %s 에 대한 리소스 조회 완료\n", region)
+			// // Log
+			// fmt.Printf("[NOTICE] %s 에 대한 리소스 조회 완료\n", region)
 		}
 	}
 }
@@ -142,7 +185,7 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 	// 데이터 처리를 위한 채널 생성
 	resources := make(chan scan.Resource, 2)
 	// 스캔을 위한 AWS 설정
-	config := scan.Configuration(DEFAULT_REGION)
+	config := awsConf.Configuration(DEFAULT_REGION)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -176,8 +219,8 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 				Resources: integration,
 				Usage:     usage,
 			}
-			// Log
-			fmt.Println("[NOTICE] global 에 대한 리소스 조회 완료")
+			// // Log
+			// fmt.Println("[NOTICE] global 에 대한 리소스 조회 완료")
 		}
 	}
 }
