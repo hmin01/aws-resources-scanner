@@ -2,20 +2,39 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
-	"time"
+	_ "time"
 
-	// Custom
+	// AWS
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+
+	// Local
+	awsConf "main.com/aws"
 	scan "main.com/scanner"
 	"main.com/util"
 )
 
 const DEFAULT_REGION string = "ap-northeast-2"
 
+// Process Key
+var PROCESS_KEY string = ""
+
 func main() {
-	// Init (커맨드라인에서 Argument 가져오기)
-	scan.Init()
+	lambda.Start(HandleRequest)
+}
+
+func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// // Init (커맨드라인에서 Argument 가져오기)
+	// scan.Init()
+
+	// Init
+	response, err := Init(request.Body)
+	if err != nil {
+		return response, err
+	}
 
 	// 작업 결과 채널 생성
 	integrations := make(chan util.ResourceByRegion, 10)
@@ -24,19 +43,19 @@ func main() {
 	// 작업 카운트
 	var ops int = 0
 
-	config := scan.Configuration(DEFAULT_REGION)
+	config := awsConf.Configuration(DEFAULT_REGION)
 	// 사용 가능한 리전 조회
-	regions := scan.GetRegions(config)
+	regions := awsConf.GetRegions(config)
 	// regions := []string{"ap-northeast-2"}
 	// 사용 가능 리전이 없을 경우, 종료
 	if len(regions) == 0 {
-		log.Fatal("[NOTICE] 사용 가능 리전이 없습니다.")
+		return util.Response(200, "[NOTICE] 사용 가능 리전이 없습니다."), nil
 	} else {
 		fmt.Println("=-=-=-=- 작업을 진행할 리전 목록 -=-=-=-=")
 	}
 
-	// 조회 처리 시간 (Start)
-	start := time.Now()
+	// // 조회 처리 시간 (Start)
+	// start := time.Now()
 	// 리전별 리소스 조회 (병렬)
 	var stmt string = ""
 	for index, region := range regions {
@@ -49,8 +68,8 @@ func main() {
 	}
 	// 글로벌 리소스 조회 (병렬)
 	go ScanGlobalResources(integrations)
-	// 로그 출력
-	fmt.Printf("%s\n\n", stmt)
+	// // 로그 출력
+	// fmt.Printf("%s\n\n", stmt)
 
 	// 리소스 통합 및 결과 출력
 	for integration := range integrations {
@@ -63,14 +82,40 @@ func main() {
 		ops += 1
 		// 모든 작업 완료 여부 확인
 		if ops == len(regions) {
-			// 조회 처리 시간 출력
-			fmt.Printf("\n[NOTICE] Query process duration: %v\n", time.Since(start))
+			// // 조회 처리 시간 출력
+			// fmt.Printf("\n[NOTICE] Query process duration: %v\n", time.Since(start))
 			// 채널 종료
 			close(integrations)
-			// 결과 출력
-			util.Print(result)
+			// Escapce
+			break
 		}
 	}
+	// 결과 출력 및 응답
+	return util.Print(PROCESS_KEY, result)
+}
+
+func Init(body string) (events.APIGatewayProxyResponse, error) {
+	// 데이터 변환
+	transformed := make(map[string]string)
+	err := json.Unmarshal([]byte(body), &transformed)
+	if err != nil {
+		return util.Response(500, "[CONFIG ERROR] The request data format is not valid."), errors.New("the request data format is not valid")
+	}
+	// 데이터 형식 확인
+	if roleArn, ok := transformed["role"]; ok {
+		if processKey, ok := transformed["key"]; ok {
+			// 초기 설정
+			awsConf.Init(roleArn)
+			// 작업 키 설정
+			PROCESS_KEY = processKey
+		} else {
+			return util.Response(500, "[CONFIG ERROR] Process key not found in request data property."), errors.New("the request data format is not valid")
+		}
+	} else {
+		return util.Response(500, "[CONFIG ERROR] Role arn not found in request data property."), errors.New("the request data format is not valid")
+	}
+	// 반환
+	return util.Response(200, ""), nil
 }
 
 // 리전에 따른 사용 중인 리소스 조회
@@ -80,7 +125,7 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 	// 데이터 처리를 위한 채널 생성
 	resources := make(chan scan.Resource, 20)
 	// 스캔을 위한 AWS 설정
-	config := scan.Configuration(region)
+	config := awsConf.Configuration(region)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -129,8 +174,8 @@ func ScanResources(region string, result chan<- util.ResourceByRegion) {
 				Resources: integration,
 				Usage:     usage,
 			}
-			// Log
-			fmt.Printf("[NOTICE] %s 에 대한 리소스 조회 완료\n", region)
+			// // Log
+			// fmt.Printf("[NOTICE] %s 에 대한 리소스 조회 완료\n", region)
 		}
 	}
 }
@@ -142,7 +187,7 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 	// 데이터 처리를 위한 채널 생성
 	resources := make(chan scan.Resource, 2)
 	// 스캔을 위한 AWS 설정
-	config := scan.Configuration(DEFAULT_REGION)
+	config := awsConf.Configuration(DEFAULT_REGION)
 	// 통합된 리소스 데이터
 	integration := make(map[string]any)
 	// 작업 카운트
@@ -176,8 +221,8 @@ func ScanGlobalResources(result chan<- util.ResourceByRegion) {
 				Resources: integration,
 				Usage:     usage,
 			}
-			// Log
-			fmt.Println("[NOTICE] global 에 대한 리소스 조회 완료")
+			// // Log
+			// fmt.Println("[NOTICE] global 에 대한 리소스 조회 완료")
 		}
 	}
 }
