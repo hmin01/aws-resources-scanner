@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
-	"time"
+	_ "time"
 
 	// AWS
 	"github.com/aws/aws-lambda-go/events"
@@ -31,7 +31,10 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	// scan.Init()
 
 	// Init
-	Init(request.Body)
+	response, err := Init(request.Body)
+	if err != nil {
+		return response, err
+	}
 
 	// 작업 결과 채널 생성
 	integrations := make(chan util.ResourceByRegion, 10)
@@ -46,13 +49,13 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	// regions := []string{"ap-northeast-2"}
 	// 사용 가능 리전이 없을 경우, 종료
 	if len(regions) == 0 {
-		log.Fatal("[NOTICE] 사용 가능 리전이 없습니다.")
+		return util.Response(200, "[NOTICE] 사용 가능 리전이 없습니다."), nil
 	} else {
 		fmt.Println("=-=-=-=- 작업을 진행할 리전 목록 -=-=-=-=")
 	}
 
-	// 조회 처리 시간 (Start)
-	start := time.Now()
+	// // 조회 처리 시간 (Start)
+	// start := time.Now()
 	// 리전별 리소스 조회 (병렬)
 	var stmt string = ""
 	for index, region := range regions {
@@ -65,8 +68,8 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 	// 글로벌 리소스 조회 (병렬)
 	go ScanGlobalResources(integrations)
-	// 로그 출력
-	fmt.Printf("%s\n\n", stmt)
+	// // 로그 출력
+	// fmt.Printf("%s\n\n", stmt)
 
 	// 리소스 통합 및 결과 출력
 	for integration := range integrations {
@@ -79,27 +82,24 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		ops += 1
 		// 모든 작업 완료 여부 확인
 		if ops == len(regions) {
-			// 조회 처리 시간 출력
-			fmt.Printf("\n[NOTICE] Query process duration: %v\n", time.Since(start))
+			// // 조회 처리 시간 출력
+			// fmt.Printf("\n[NOTICE] Query process duration: %v\n", time.Since(start))
 			// 채널 종료
 			close(integrations)
-			// 결과 출력
-			util.Print(PROCESS_KEY, result)
+			// Escapce
+			break
 		}
 	}
-	// Return
-	return events.APIGatewayProxyResponse{
-		StatusCode: 200,
-		Body:       "Sucess",
-	}, nil
+	// 결과 출력 및 응답
+	return util.Print(PROCESS_KEY, result)
 }
 
-func Init(body string) {
+func Init(body string) (events.APIGatewayProxyResponse, error) {
 	// 데이터 변환
 	transformed := make(map[string]string)
 	err := json.Unmarshal([]byte(body), &transformed)
 	if err != nil {
-		log.Fatalf("[CONFIG ERROR] %v\n", err)
+		return util.Response(500, "[CONFIG ERROR] The request data format is not valid."), errors.New("the request data format is not valid")
 	}
 	// 데이터 형식 확인
 	if roleArn, ok := transformed["role"]; ok {
@@ -109,11 +109,13 @@ func Init(body string) {
 			// 작업 키 설정
 			PROCESS_KEY = processKey
 		} else {
-			log.Fatalln("[CONFIG ERROR] Not found role arn")
+			return util.Response(500, "[CONFIG ERROR] Process key not found in request data property."), errors.New("the request data format is not valid")
 		}
 	} else {
-		log.Fatalln("[CONFIG ERROR] Not found process key")
+		return util.Response(500, "[CONFIG ERROR] Role arn not found in request data property."), errors.New("the request data format is not valid")
 	}
+	// 반환
+	return util.Response(200, ""), nil
 }
 
 // 리전에 따른 사용 중인 리소스 조회
